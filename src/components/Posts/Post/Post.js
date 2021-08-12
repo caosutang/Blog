@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
+import ThumbUpAltOutlined from "@material-ui/icons/ThumbUpAltOutlined";
 import DeleteIcon from "@material-ui/icons/Delete";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import moment from "moment";
@@ -19,6 +20,34 @@ import { deletePost, likePost } from "../../../actions/posts";
 const Post = ({ post, setCurrentId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const user = JSON.parse(localStorage.getItem("profile"));
+
+  const Likes = () => {
+    if (post.likes.length > 0) {
+      return post.likes.find(
+        (like) => like === (user.result.googleId || user.result._id)
+      ) ? (
+        <React.Fragment>
+          <ThumbUpAltIcon fontSize="small" />
+          &nbsp;
+          {post.likes.length > 2
+            ? `You and ${post.likes.length - 1} others`
+            : `${post.likes.length} like${post.likes.length > 1 ? "s" : ""}`}
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <ThumbUpAltOutlined fontSize="small" />
+          &nbsp;{post.likes.length} {post.likes.length === 1 ? "Like" : "Likes"}
+        </React.Fragment>
+      );
+    }
+    return (
+      <React.Fragment>
+        <ThumbUpAltOutlined fontSize="small" />
+        &nbsp;Like
+      </React.Fragment>
+    );
+  };
 
   return (
     <Card className={classes.card}>
@@ -37,13 +66,17 @@ const Post = ({ post, setCurrentId }) => {
         </Typography>
       </div>
       <div className={classes.overlay2}>
-        <Button
-          onClick={() => setCurrentId(post._id)}
-          style={{ color: "white" }}
-          size="small"
-        >
-          <MoreHorizIcon fontSize="medium" />
-        </Button>
+        {user && user.result.name === post.creator ? (
+          <Button
+            onClick={() => setCurrentId(post._id)}
+            style={{ color: "white" }}
+            size="small"
+          >
+            <MoreHorizIcon fontSize="medium" />
+          </Button>
+        ) : (
+          <React.Fragment></React.Fragment>
+        )}
       </div>
       <div className={classes.details}>
         <Typography variant="body2" color="textSecondary" component="h2">
@@ -71,17 +104,21 @@ const Post = ({ post, setCurrentId }) => {
             dispatch(likePost(post._id));
           }}
         >
-          <ThumbUpAltIcon fontSize="small" /> Like {post.likeCount}{" "}
+          <Likes />
         </Button>
-        <Button
-          size="small"
-          color="primary"
-          onClick={() => {
-            dispatch(deletePost(post._id));
-          }}
-        >
-          <DeleteIcon fontSize="small" /> Delete
-        </Button>
+        {user && user.result.name === post.creator ? (
+          <Button
+            size="small"
+            color="primary"
+            onClick={() => {
+              dispatch(deletePost(post._id));
+            }}
+          >
+            <DeleteIcon fontSize="small" /> Delete
+          </Button>
+        ) : (
+          <React.Fragment></React.Fragment>
+        )}
       </CardActions>
     </Card>
   );

@@ -21,10 +21,9 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    const token = user.token;
     // JWT
-    if (token) {
-      const decodeToken = decode(token);
+    if (user) {
+      const decodeToken = decode(user.token);
       if (decodeToken.exp * 1000 < new Date().getTime()) logout();
     }
     setUser(JSON.parse(localStorage.getItem("profile")));
@@ -32,7 +31,7 @@ const Navbar = () => {
 
   return (
     <AppBar className={classes.appBar} position="static" color="inherit">
-      <div className={classes.brandContainer}>
+      <Link to="/" className={classes.brandContainer}>
         <Typography
           className={classes.heading}
           to="/"
@@ -42,7 +41,7 @@ const Navbar = () => {
           Memories
         </Typography>
         <img className={classes.image} src={memories} alt="icon" height="60" />
-      </div>
+      </Link>
 
       <Toolbar className={classes.toolbar}>
         {user ? (

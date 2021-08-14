@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
 import FileBase from "react-file-base64";
+import { useHistory } from "react-router-dom";
 
 import { createPost, updatePost } from "../../actions/posts";
 import useStyles from "./styles";
@@ -9,10 +10,13 @@ import useStyles from "./styles";
 const Form = ({ currentId, setCurrentId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const post = useSelector((state) =>
-    state.posts.find((p) => p._id === currentId)
-  );
+  const history = useHistory();
 
+  const post = useSelector((state) =>
+    currentId
+      ? state.posts.posts.find((message) => message._id === currentId)
+      : null
+  );
   const [postData, setPostData] = useState({
     title: "",
     message: "",
@@ -30,13 +34,16 @@ const Form = ({ currentId, setCurrentId }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (currentId) {
-      dispatch(
-        updatePost(currentId, { ...postData, creator: user.result.name })
-      );
+
+    console.log(
+      "🚀 ~ file: Form.js ~ line 39 ~ handleSubmit ~ currentId",
+      currentId
+    );
+    if (currentId === 0) {
+      dispatch(createPost({ ...postData, name: user.result.name }, history));
       clear();
     } else {
-      dispatch(createPost({ ...postData, creator: user.result.name }));
+      dispatch(updatePost(currentId, { ...postData, name: user.result.name }));
       clear();
     }
   };

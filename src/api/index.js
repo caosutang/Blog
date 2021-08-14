@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const API = axios.create({ baseURL: "http://localhost:5000" });
-// const url = "http://localhost:5000/posts";
 // const url = "https://blog-travel-projects.herokuapp.com/posts";
+
 API.interceptors.request.use((req) => {
   if (localStorage.getItem("profile")) {
     req.headers.Authorization = `Bearer ${
@@ -12,7 +12,14 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-export const fetchPosts = () => API.get("/posts");
+export const fetchPost = (id) => API.get(`/posts/${id}`);
+export const fetchPosts = (page) => API.get(`/posts?page=${page}`);
+export const fetchPostsBySearch = (searchQuery) =>
+  API.get(
+    `/posts/search?searchQuery=${searchQuery.search || "none"}&tags=${
+      searchQuery.tags
+    }`
+  );
 export const createPost = (newPost) => API.post("/posts", newPost);
 export const updatePost = (id, updatePost) =>
   API.patch(`/posts/${id}`, updatePost);
